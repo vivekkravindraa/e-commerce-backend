@@ -8,6 +8,7 @@ mongoose.connect('mongodb://localhost:27017/e-com-backend',{useNewUrlParser: tru
 .catch((err) => {
     res.send(err);
 })
+
 mongoose.set('useCreateIndex', true);
 
 module.exports = { mongoose }

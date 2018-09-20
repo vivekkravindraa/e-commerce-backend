@@ -1,6 +1,9 @@
 const express = require('express');
-const _ = require('lodash');
 const { Category } = require('../models/category');
+const { authenticateUser, authorizeUser } = require('../middlewares/authentication');
+const { validateId } = require('../middlewares/utilities');
+const _ = require('lodash');
+
 const router = express.Router();
 
 router.get('/',(req,res) => {
@@ -25,7 +28,7 @@ router.get('/:id',(req,res) => {
     })
 })
 
-router.post('/',(req,res) => {
+router.post('/', authenticateUser, authorizeUser, (req,res) => {
     let body = _.pick(req.body, ['name']);
     let category = new Category(body);
 
@@ -38,7 +41,7 @@ router.post('/',(req,res) => {
     })
 })
 
-router.put('/:id',(req,res) => {
+router.put('/:id', validateId, authenticateUser, authorizeUser, (req,res) => {
     let id = req.params.id;
     let body = _.pick(req.body, ['name']);
 
@@ -51,7 +54,7 @@ router.put('/:id',(req,res) => {
     })
 })
 
-router.delete('/:id',(req,res) => {
+router.delete('/:id', validateId, authenticateUser, authorizeUser, (req,res) => {
     let id = req.params.id;
 
     Category.findByIdAndRemove(id)
