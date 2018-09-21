@@ -16,7 +16,7 @@ router.get('/',(req,res) => {
 }) 
 
 router.post('/', (req, res) => {
-    let body = _.pick(req.body, ['username', 'email', 'password','role']);
+    let body = _.pick(req.body, ['username', 'email', 'password', 'role']);
     let user = new User(body);
     user.save().then((user) => {
         return user.generateToken();
@@ -26,6 +26,22 @@ router.post('/', (req, res) => {
         res.send(err); 
     });
 });
+
+// localhost:3000/users/wishlist
+router.post('/wishlist', authenticateUser, (req,res) => {
+    let user = req.locals.user;
+    let body = _.pick(req.body, ['product']);
+
+    user.wishlists.push(body)
+    user.save()
+    .then((user) => {
+        res.send(user);
+    })
+    .catch((err) => {
+        res.send(err);
+    })
+
+})
 
 router.get('/profile', authenticateUser, (req, res) => {
     res.send(req.locals.user); 

@@ -1,46 +1,35 @@
 const mongoose = require('mongoose');
 
-const validator = require('validator');
-const jwt = require('jsonwebtoken');
+const Schema = mongoose.Schema;
+
 const _ = require('lodash');
+const validator = require('validator');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const { cartItemSchema } = require('./cart_item');
 
-const Schema = mongoose.Schema;
-
 const userSchema = new Schema({
     username: {
-        type: String,
-        trim: true,
-        required: true,
-        unique: true
-    },
-    email: {
-        type: String,
-        required: true,
-        unique: true,
-        validate: {
-            validator: function(value) {
-                return validator.isEmail(value);
-            },
-            message: 'the email id is incorrect'
-        }
-    },
+        type: String, 
+        required: true
+    }, 
     password: {
-        type: String,
-        required: true,
+        type: String, 
+        required: true, 
         minlength: 8,
         maxlength: 128
-    },
-    mobile: {
-        type: String,
-        required: true,
+    }, 
+    email: {
+        type: String, 
+        required: true, 
         validate: {
-            validator: function(value) {
-                return validator.isNumeric(value) && validator.isLength(value, {min: 10, max: 10});
+            validator: function(value){
+                return validator.isEmail(value);
             },
-            message: 'should be 10 digits'
+            message: function(){
+                return 'invalid email format';
+            }
         }
     },
     role: {
@@ -49,18 +38,26 @@ const userSchema = new Schema({
     },
     tokens: [
         {
-            access: {
-                type: String,
-                required: true
-            },
             token: {
-                type: String,
-                required: true
+                type: String
             }
         }
     ],
-    cartItems: [ cartItemSchema ]
-})
+    cartItems: [ cartItemSchema ],
+    wishlists: [
+        {
+            product: {
+                type: Schema.Types.ObjectId,
+                ref: 'Product'
+            },
+            isPublic: {
+                type: Boolean,
+                enum: [ true, false ],
+                default: false
+            }
+        }
+    ]
+});
 
 userSchema.pre('save',function(next) {
     let user = this;
@@ -84,10 +81,6 @@ userSchema.statics.findByToken = function(token) {
     try {
         tokenData = jwt.verify(token, 'supersecret')
     } catch(e) {
-        // return new Promse((resolve,reject) => {
-        //     reject(e);
-        // })
-        // OR
         return Promise.reject(e);
     }
     return User.findOne({ '_id': tokenData._id, 'tokens.token': token })
@@ -97,7 +90,7 @@ userSchema.statics.findByEmailAndPassword = function(email, password) {
     let User = this;
     return User.findOne({email: email})
     .then((user) => {
-        if(!user) { // (!user) ----> null ----> if email is incorrect
+        if(!user) {
             return Promise.reject('invalid email');
         } 
         return bcrypt.compare(password, user.password)
@@ -105,15 +98,14 @@ userSchema.statics.findByEmailAndPassword = function(email, password) {
             if(res) {
                 return user;
             } else {
-                return Promise.reject('invalid password');  // if password is incorrect
+                return Promise.reject('invalid password');
             }
         })
     })
 }
 
-// toJSON instance method is specific to users model in this case
 userSchema.methods.toJSON = function() {
-    return _.pick(this, ['_id','username','email','mobile','role']);
+    return _.pick(this, ['_id','username','email','role']);
 }
 
 userSchema.methods.generateToken = function() {

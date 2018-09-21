@@ -6,7 +6,6 @@ const _ = require('lodash');
 
 const router = express.Router();
 
-// get all products
 // localhost:3000/products/
 router.get('/', (req, res) => {
     Product.find()
