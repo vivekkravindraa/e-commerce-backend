@@ -5,6 +5,8 @@ const jwt = require('jsonwebtoken');
 const _ = require('lodash');
 const bcrypt = require('bcryptjs');
 
+const { cartItemSchema } = require('./cart_item');
+
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
@@ -56,7 +58,8 @@ const userSchema = new Schema({
                 required: true
             }
         }
-    ]
+    ],
+    cartItems: [ cartItemSchema ]
 })
 
 userSchema.pre('save',function(next) {
