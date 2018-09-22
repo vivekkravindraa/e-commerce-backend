@@ -13,7 +13,7 @@ router.get('/',(req,res) => {
     .catch((err) => {
         res.send(err);
     })
-}) 
+});
 
 router.post('/', (req, res) => {
     let body = _.pick(req.body, ['username', 'email', 'password', 'role']);
@@ -41,7 +41,7 @@ router.post('/wishlist', authenticateUser, (req,res) => {
         res.send(err);
     })
 
-})
+});
 
 router.get('/profile', authenticateUser, (req, res) => {
     res.send(req.locals.user); 

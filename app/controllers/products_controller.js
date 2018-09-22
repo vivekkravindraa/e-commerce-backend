@@ -17,6 +17,18 @@ router.get('/', (req, res) => {
     });
 });
 
+router.get('/:id', (req, res) => {
+    let id = req.params.id;
+
+    Product.find(id)
+    .then((product) => {
+        res.send(product);
+    })
+    .catch((err) => {
+        res.send(err);
+    });
+});
+
 router.post('/', authenticateUser, authorizeUser, (req, res) => {
     // strong parameters
     let body = _.pick(req.body, ['name','price', 'description', 'category', 'codEligible', 'stock', 'maxUnitPurchase', 'lowStockAlert']);
@@ -66,6 +78,21 @@ router.put('/:id', validateId, authenticateUser, authorizeUser, (req, res) => {
     // });
 
 });
+
+router.delete('/:id', validateId, authenticateUser, authorizeUser, (req,res) => {
+    let id = req.params.id;
+
+    Product.findOneAndRemove(id)
+    .then((product) => {
+        res.send({
+            product,
+            notice: 'successfully deleted the product'
+        })
+    })
+    .catch((err) => {
+        res.send(err);
+    })
+})
 
 module.exports = {
     productsController: router

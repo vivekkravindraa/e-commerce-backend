@@ -6,6 +6,7 @@ const _ = require('lodash');
 
 const router = express.Router();
 
+// localhost:3000/categories
 router.get('/',(req,res) => {
     Category.find()
     .then((categories) => {
@@ -14,7 +15,7 @@ router.get('/',(req,res) => {
     .catch((err) => {
         res.send(err);
     })
-})
+});
 
 router.get('/:id',(req,res) => {
     let id = req.params.id;
@@ -26,7 +27,7 @@ router.get('/:id',(req,res) => {
     .catch((err) => {
         res.send(err);
     })
-})
+});
 
 router.post('/', authenticateUser, authorizeUser, (req,res) => {
     let body = _.pick(req.body, ['name']);
@@ -39,7 +40,7 @@ router.post('/', authenticateUser, authorizeUser, (req,res) => {
     .catch((err) => {
         res.send(err);
     })
-})
+});
 
 router.put('/:id', validateId, authenticateUser, authorizeUser, (req,res) => {
     let id = req.params.id;
@@ -52,7 +53,7 @@ router.put('/:id', validateId, authenticateUser, authorizeUser, (req,res) => {
     .catch((err) => {
         res.send(err);
     })
-})
+});
 
 router.delete('/:id', validateId, authenticateUser, authorizeUser, (req,res) => {
     let id = req.params.id;
@@ -61,10 +62,10 @@ router.delete('/:id', validateId, authenticateUser, authorizeUser, (req,res) => 
     .then((category) => {
         res.send(category);
     })
-    .catch(() => {
+    .catch((err) => {
         res.send(err);
     })
-})
+});
 
 module.exports = {
     categoriesController: router

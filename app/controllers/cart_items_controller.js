@@ -1,5 +1,4 @@
 const express = require('express');
-
 const { CartItem } = require('../models/cart_item');
 const { authenticateUser } = require('../middlewares/authentication');
 const { validateId } = require('../middlewares/utilities');
@@ -16,7 +15,7 @@ router.get('/', authenticateUser, (req, res) => {
 
 router.post('/', authenticateUser, (req, res) => {
     let user = req.locals.user; 
-    let body = _.pick(req.body, ['product', 'quantity']);
+    let body = _.pick(req.body, ['product', 'price', 'quantity']);
     let cartItem = new CartItem(body);
 
     // on posting 'same new product', incrementing quantity
@@ -45,7 +44,7 @@ router.post('/', authenticateUser, (req, res) => {
 router.put('/:id', validateId, authenticateUser, (req, res) => {
     let user = req.locals.user; 
     let id = req.params.id;
-    let body = _.pick(req.body, ['quantity']);
+    let body = _.pick(req.body, ['price','quantity']);
     let inCart = user.cartItems.id(id);
 
     if(inCart) {
@@ -76,7 +75,7 @@ router.delete('/empty', authenticateUser, (req,res) => {
     .catch((err) => {
         res.send(err);
     })
-})
+});
 
 router.delete('/:id', validateId, authenticateUser, (req,res) => {
     let user = req.locals.user; 
