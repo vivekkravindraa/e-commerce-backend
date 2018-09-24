@@ -18,7 +18,7 @@ router.post('/', authenticateUser, (req, res) => {
     let body = _.pick(req.body, ['product', 'price', 'quantity']);
     let cartItem = new CartItem(body);
 
-    // on posting 'same new product', incrementing quantity
+    // on adding the 'same new product', incrementing quantity
     let result = user.cartItems.find((item) => {
         return item.product.equals(cartItem.product);
     });
