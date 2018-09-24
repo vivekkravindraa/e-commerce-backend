@@ -2,22 +2,34 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
+const shorthash = require('shorthash');
+
+const { User } = require('./user');
+
 const orderSchema = new Schema({
     orderNumber: {
-        type: Number,
-        required: true
+        type: String,
+        required: true,
+        unique: true
     },
     orderDate: {
         type: Date,
-        default: Date.now
+        default: Date.now,
+        required: true
     },
-    orderStatus: {
+    status: {
         type: String,
-        default: 'confirmed',
-        enum: ['confirmed', 'pending', 'cancelled']
+        enum: ['confirmed', 'cancelled'],
+        default: 'confirmed'
     },
-    orderTotal: {
-        type: Number
+    user: {
+        type: Schema.Types.ObjectId,
+        required: true,
+        ref: 'User'
+    },
+    total: {
+        type: Number,
+        default: 0
     },
     orderItems: [
         {
@@ -25,28 +37,50 @@ const orderSchema = new Schema({
                 type: Schema.Types.ObjectId,
                 ref: 'Product'
             },
-            price: {
-                type: Number
-            },
             quantity: {
-                type: Number
+                type: Number,
+                // required: true,
+                min: 1
+            },
+            price: {
+                type: Number,
+                // required: true,
+                min: 1
             }
         }
-    ],
-    user: {
-        type: Schema.Types.ObjectId,
-        ref: 'User'
-    }
+    ]
 });
 
-orderSchema.pre('save', function(next) {
-    if(!this.orderTotal) {
-        this.orderTotal = this.orderItems.price * this.orderItems.quantity;
-    }
+// first validates, if passes, then calls the pre 'save'
+orderSchema.pre('validate', function(next) {
+    let order = this;
+    
+    order.orderNumber = `DCT-${shorthash.unique(order.orderDate.toString()+order.orderDate.toString())}`;
     next();
 })
 
-const { Order } = mongoose.model('Order', orderSchema);
+orderSchema.pre('save', function(next) {
+    let order = this;
+
+    User.findOne({ _id: order.user }).populate('cartItems.product')
+    .then((user) => {
+        user.cartItems.forEach((inCart) => {
+            let item = {
+                product: inCart.product._id,
+                quantity: inCart.quantity,
+                price: inCart.product.price
+            }
+            order.orderItems.push(item);
+            order.total += item.quantity * item.price;
+            next();
+        });
+    })
+    .catch((err) => {
+        return Promise.reject(err);
+    });
+})
+
+const Order = mongoose.model('Order', orderSchema);
 
 module.exports = {
     Order

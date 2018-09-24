@@ -8,77 +8,31 @@ const _ = require('lodash');
 const router = express.Router();
 
 router.get('/', authenticateUser, (req,res) => {
-    let user = req.locals.user; 
-    res.send(user.orderItems);
+    let user = req.locals.user;
+
+    Order.find({ user: user._id })
+    .then((orders) => {
+        res.send(orders);
+    })
+    .catch((err) => {
+        res.send(err);
+    })
 })
 
 router.post('/', authenticateUser, (req, res) => {
-    let user = req.locals.user; 
-    let body = _.pick(req.body, []);
-    let orderItem = new Order(body);
+    let user = req.locals.user;
+    let order = new Order();
 
-    user.orderItems.push(orderItem);
-    user.save()
-    .then((user) => {
+    order.user = user._id;
+    order.save()
+    .then((order) => {
         res.send({
-            orderItem,
-            notice: 'successfully added the product to the orders'
+            order,
+            notice: 'successfully created an order'
         });
     }).catch((err) => {
         res.send(err); 
     });
-});
-
-router.put('/:id', validateId, authenticateUser, (req,res) => {
-    let user = req.locals.user; 
-    let id = req.params.id;
-    let body = _.pick(req.body, []);
-    let inOrder = user.orderItems.id(id);
-
-    if(inOrder) {
-        Object.assign(inOrder, body);     
-    }
-
-    user.save()
-    .then((user) => {
-        res.send({
-            orderItem: inOrder, 
-            notice: 'successfully updated the order'
-        });
-    })
-    .catch((err) => {
-        res.send(err);
-    })
-})
-
-router.delete('/empty', authenticateUser, (req,res) => {
-    let user = req.locals.user;
-
-    // clearing the orderItems array for specific user
-    User.findByIdAndUpdate(user._id, {$set: {orderItems: []}}, {new: true})
-    .then((user) => {
-        res.send(user);
-    })
-    .catch((err) => {
-        res.send(err);
-    })
-});
-
-router.delete('/:id', validateId, authenticateUser, (req,res) => {
-    let user = req.locals.user; 
-    let id = req.params.id; 
-    
-    user.orderItems.id(id).remove();
-    user.save()
-    .then((user) => {
-        res.send({
-            orderItems: user.orderItems,
-            notice: 'successfully removed the product from cart'
-        });
-    })
-    .catch((err) => {
-        res.send(err);
-    })
 });
 
 module.exports = {
