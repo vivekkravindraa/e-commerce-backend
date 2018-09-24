@@ -1,10 +1,8 @@
 const mongoose = require('mongoose');
+const shorthash = require('shorthash');
+const { User } = require('./user');
 
 const Schema = mongoose.Schema;
-
-const shorthash = require('shorthash');
-
-const { User } = require('./user');
 
 const orderSchema = new Schema({
     orderNumber: {
@@ -39,12 +37,12 @@ const orderSchema = new Schema({
             },
             quantity: {
                 type: Number,
-                // required: true,
+                required: true,
                 min: 1
             },
             price: {
                 type: Number,
-                // required: true,
+                required: true,
                 min: 1
             }
         }
