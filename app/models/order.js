@@ -78,6 +78,11 @@ orderSchema.pre('save', function(next) {
     });
 })
 
+orderSchema.post('save',function(next){
+    // TODO: Clear the orderItems
+    next();
+})
+
 const Order = mongoose.model('Order', orderSchema);
 
 module.exports = {
