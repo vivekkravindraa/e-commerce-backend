@@ -35,7 +35,7 @@ router.post('/', authenticateUser, (req, res) => {
     });
 });
 
-router.post('/', authenticateUser, (req,res) => {
+router.delete('/empty', authenticateUser, (req,res) => {
     // TODO:
 })
 
