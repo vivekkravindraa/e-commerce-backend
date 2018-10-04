@@ -53,7 +53,7 @@ const orderSchema = new Schema({
 orderSchema.pre('validate', function(next) {
     let order = this;
     
-    order.orderNumber = `DCT-${shorthash.unique(order.orderDate.toString()+order.orderDate.toString())}`;
+    order.orderNumber = `DCT-${shorthash.unique(order.orderDate.toString()+order.user.toString())}`;
     next();
 })
 
