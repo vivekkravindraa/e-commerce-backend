@@ -39,8 +39,7 @@ router.post('/wishlist', authenticateUser, (req,res) => {
     })
     .catch((err) => {
         res.send(err);
-    })
-
+    });
 });
 
 router.get('/profile', authenticateUser, (req, res) => {
