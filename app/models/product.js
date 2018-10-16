@@ -61,6 +61,8 @@ module.exports = {
     Product
 }
 
+// Sample Object
+
 // {
 //     "name": "iphone xs",
 //     "price": 125000,

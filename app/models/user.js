@@ -38,6 +38,10 @@ const userSchema = new Schema({
     },
     tokens: [
         {
+            auth: {
+                type: String,
+                default: 'x-head'
+            },
             token: {
                 type: String
             }
