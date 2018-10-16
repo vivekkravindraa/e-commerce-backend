@@ -78,10 +78,10 @@ orderSchema.pre('save', function(next) {
     });
 })
 
-orderSchema.post('save',function(next){
-    // TODO: Clear the orderItems
-    next();
-})
+// orderSchema.post('save',function(next){
+//     // TODO: Clear the orderItems array
+//     next();
+// })
 
 const Order = mongoose.model('Order', orderSchema);
 
