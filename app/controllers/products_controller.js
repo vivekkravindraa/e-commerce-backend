@@ -65,7 +65,7 @@ router.put('/:id', validateId, authenticateUser, authorizeUser, (req, res) => {
         res.send(err);
     });
 
-    // 2nd approad, find and update using Model.findByIdAndUpdate().
+    // 2nd approach, find and update using Model.findByIdAndUpdate().
     // Advantage: you are not bringing the object back into memory
     // Disadvantage: is 'this' will refer to the "class"
 
