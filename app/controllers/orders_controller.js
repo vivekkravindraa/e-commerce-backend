@@ -35,9 +35,9 @@ router.post('/', authenticateUser, (req, res) => {
     });
 });
 
-router.delete('/empty', authenticateUser, (req,res) => {
-    // TODO:
-})
+// router.delete('/empty', authenticateUser, (req,res) => {
+//     // TODO: empty the orderItems array
+// })
 
 module.exports = {
     ordersController: router
